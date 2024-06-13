@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pomodoro/indicator.dart';
 import 'package:pomodoro/timePicker.dart';
 import 'dart:async';
@@ -18,6 +16,23 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isRunning = false;
   int totalRounds = 0;
   late Timer timer;
+  double pickerWidth = 300;
+
+  late ScrollController _scrollController;
+
+  double _calculateScrollOffset(int totalSeconds) {
+    double maxOffset = pickerWidth; // Example max scroll offset
+    return totalSeconds / twentyFiveMinutes * maxOffset;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController(
+      initialScrollOffset:
+          _calculateScrollOffset(totalSeconds), // Set initial scroll position
+    );
+  }
 
   void onTick(Timer timer) {
     //Timer 에서 time parameter를 전달하므로 timer 인자 넣기 onClick(event)와 같은 방식
@@ -30,6 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       setState(() {
         totalSeconds--;
+        _scrollController.animateTo(
+          _calculateScrollOffset(totalSeconds),
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
       });
     }
   }
@@ -76,15 +96,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               )),
           const SizedBox(
-            width: 2,
-            height: 20,
+            width: 10,
+            height: 30,
             child: Indicator(),
           ),
           Flexible(
             flex: 2,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 45),
-              child: const TimePicker(),
+              child: TimePicker(
+                totalSeconds: totalSeconds,
+                scrollController: _scrollController,
+                pickerWidth: pickerWidth,
+              ),
             ),
           ),
           Flexible(

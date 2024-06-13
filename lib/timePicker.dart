@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 
 class TimePicker extends StatelessWidget {
-  const TimePicker({super.key});
+  final int totalSeconds;
+  final ScrollController scrollController;
+  final double pickerWidth;
+
+  const TimePicker(
+      {super.key,
+      required this.totalSeconds,
+      required this.scrollController,
+      required this.pickerWidth});
 
   @override
   Widget build(BuildContext context) {
-    double pickerWidth = 300;
     double pickerHeight = 60;
 
     final color = Theme.of(context).colorScheme.onPrimary;
 
     return ListView.builder(
-        physics: const ClampingScrollPhysics(),
+        controller: scrollController,
+        physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.all(0),
         scrollDirection: Axis.horizontal,
         itemCount: 3,
